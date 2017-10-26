@@ -34,7 +34,7 @@ void sr_arpcache_sweepreqs(struct sr_instance *sr) {
 
 void handle_arpreq(struct sr_instance *sr, struct sr_arpreq *arpreq){
 	if (difftime(time(0), arpreq->sent) >= 1){
-		if (arpreq->times_sent < 5){
+		if (arpreq->times_sent < 15){
 			struct sr_if *dest_intface = sr_get_interface(sr, arpreq->packets->iface);
 			uint8_t *arp_packet = malloc(sizeof(sr_ethernet_hdr_t) + sizeof(sr_arp_hdr_t));
 			sr_ethernet_hdr_t *arp_ether_header = (sr_ethernet_hdr_t *) arp_packet;

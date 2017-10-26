@@ -102,6 +102,7 @@ void sr_handlepacket(struct sr_instance *sr,
 		if(ip_header->ip_ttl <= 1){
 			exceed_time(sr, packet, len, interface);
 		}
+		ip_header->ip_ttl--;
 
 		struct sr_if *intface = sr->if_list;
 		while(intface){
