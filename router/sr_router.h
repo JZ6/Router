@@ -67,6 +67,10 @@ int sr_read_from_server(struct sr_instance* );
 /* -- sr_router.c -- */
 void sr_init(struct sr_instance* );
 void sr_handlepacket(struct sr_instance* , uint8_t * , unsigned int , char* );
+void create_send(int type, int code, uint32_t source, uint8_t *send_packet, struct sr_instance* sr, uint8_t * packet, char* interface);
+void exceed_time(struct sr_instance* sr, uint8_t * packet/* lent */, unsigned int len, char* interface/* lent */);
+void ip_icmp(struct sr_instance* sr, uint8_t * packet/* lent */,unsigned int len, char* interface/* lent */);
+struct sr_rt* prematch(struct sr_instance* sr, uint32_t dest);
 
 /* -- sr_if.c -- */
 void sr_add_interface(struct sr_instance* , const char* );
