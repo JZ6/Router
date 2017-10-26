@@ -84,13 +84,20 @@ void sr_handlepacket(struct sr_instance *sr,
 	/* fill in code here */
 
 	sr_ethernet_hdr_t *ethernet_header = (sr_ethernet_hdr_t *) packet;
+	if(len < sizeof(sr_ethernet_hdr_t)){
+		return;
+	}
 	if(ntohs(ethernet_header->ether_type) == ethertype_ip){
+		if(len < (sizeof(sr_ip_hdr_t) + sizeof(sr_ethernet_hdr_t))){
+			return;
+		}
 		sr_ip_hdr_t *ip_header = (sr_ip_hdr_t *) (packet + sizeof(sr_ethernet_hdr_t));
-		/* uint16_t received_sum = ip_header->ip_sum;
-		 * ip_header->ip_sum = 0;
-		 * assert(received_sum == cksum(ip_header, ip_header->ip_hl * 4));
-		 * ip_header->ip_sum = received_sum;
-		 */
+		uint16_t received_sum = ip_header->ip_sum;
+		ip_header->ip_sum = 0;
+		if(received_sum != cksum(ip_header, sizeof(sr_ip_hdr_t))){
+			return;
+		}
+		ip_header->ip_sum = received_sum;
 
 		if(ip_header->ip_ttl <= 1){
 			exceed_time(sr, packet, len, interface);
@@ -156,6 +163,9 @@ void sr_handlepacket(struct sr_instance *sr,
 			}
 		}
 	}else{
+		if(len < (sizeof(sr_arp_hdr_t) + sizeof(sr_ethernet_hdr_t))){
+			return;
+		}
 		sr_arp_hdr_t *arp_header = (sr_arp_hdr_t *) (packet + sizeof(sr_ethernet_hdr_t));
 
 		struct sr_if *dest_intface = sr->if_list;
